@@ -80,13 +80,13 @@ var sealBenchCmd = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "storage-dir",
-			Value: "~/.lotus-bench",
+			Value: "~/.lotus-checking",
 			Usage: "Path to the storage directory that will store sectors long term",
 		},
 		&cli.StringFlag{
 			Name:  "sector-size",
-			Value: "512MiB",
-			Usage: "size of the sectors in bytes, i.e. 32GiB",
+			Value: "32GiB",
+			Usage: "size of the sectors in bytes, i.e. 512MiB, 32GiB",
 		},
 		&cli.StringFlag{
 			Name:  "sectors-file",

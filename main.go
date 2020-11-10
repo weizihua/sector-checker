@@ -64,7 +64,7 @@ func main() {
 		Commands: []*cli.Command{
 			proveCmd,
 			sealBenchCmd,
-			importBenchCmd,
+			// importBenchCmd,
 		},
 	}
 

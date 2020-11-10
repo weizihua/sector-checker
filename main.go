@@ -135,19 +135,32 @@ var sealBenchCmd = &cli.Command{
 		var sbdir string
 
 		sdir, err := homedir.Expand(c.String("storage-dir"))
-		log.Debugf("===storage-dir==: %+v", sdir)
 		if err != nil {
 			log.Errorf("===homedir.Expand==: %+v", err)
 			return err
 		}
+		log.Debugf("===storage-dir==: %+v", sdir)
 
-		err = os.MkdirAll(sdir, 0775) //nolint:gosec
+		// err = os.MkdirAll(sdir, 0775) //nolint:gosec
+		// if err != nil {
+		// 	return xerrors.Errorf("creating sectorbuilder dir: %w", err)
+		// }
+
+		// defer func() {
+		// }()
+		st, err := os.Stat(sdir)
 		if err != nil {
-			return xerrors.Errorf("creating sectorbuilder dir: %w", err)
+			return xerrors.Errorf("stat backup file (%s): %w", sdir, err)
 		}
+		log.Debugf("===os.Stat==: %+v", st)
 
-		defer func() {
-		}()
+		f, err := os.Open(sdir)
+		if err != nil {
+			return xerrors.Errorf("opening backup file: %w", err)
+		}
+		defer f.Close() // nolint:errcheck
+		log.Debugf("===os.Open==: %+v", f)
+		log.Info("Checking if repo exists")
 
 		sbdir = sdir
 

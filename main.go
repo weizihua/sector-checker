@@ -52,7 +52,7 @@ type Commit2In struct {
 }
 
 func main() {
-	logging.SetLogLevel("*", "INFO")
+	logging.SetLogLevel("*", "DEBUG")
 
 	log.Info("Starting lotus-bench")
 
@@ -93,6 +93,16 @@ var sealBenchCmd = &cli.Command{
 			Value: "sectors.txt",
 			Usage: "absolute path file. contains line number, line cidcommr, line number...",
 		},
+		&cli.StringFlag{
+			Name:  "sectors-file-only-number",
+			Value: "",
+			Usage: "absolute path file. contains line number, line cidcommr, line number...",
+		},
+		&cli.StringFlag{
+			Name:  "sectors-file-with-cidcommr",
+			Value: "sectors.txt",
+			Usage: "aabsolute path file. contains line number, line cidcommr, line number..., each in a line",
+		},
 		&cli.BoolFlag{
 			Name:  "no-gpu",
 			Usage: "disable gpu usage for the checking",
@@ -106,7 +116,6 @@ var sealBenchCmd = &cli.Command{
 			Name:  "number",
 			Value: 1,
 		},
-
 		&cli.StringFlag{
 			Name:  "cidcommr",
 			Usage: "CIDcommR,  eg/default.  bagboea4b5abcbkyyzhl37s5kyjjegeysedpczhija7cczazapavjejbppck57b2z",
@@ -126,7 +135,9 @@ var sealBenchCmd = &cli.Command{
 		var sbdir string
 
 		sdir, err := homedir.Expand(c.String("storage-dir"))
+		log.Debugf("===storage-dir==: %+v", sdir)
 		if err != nil {
+			log.Errorf("===homedir.Expand==: %+v", err)
 			return err
 		}
 

@@ -150,7 +150,7 @@ var sectorsListCmd = &cli.Command{
 		for _, info := range sset {
 			commitedIDs[info.SectorNumber] = struct{}{}
 		}
-		log.Debugf("sset: ", sset)
+		log.Debugf("sset: : %+v", sset)
 		log.Debugf("commitedIDs: ", len(commitedIDs))
 
 		sort.Slice(list, func(i, j int) bool {

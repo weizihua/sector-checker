@@ -7,6 +7,29 @@ This tools can help you check sector to avoid the window PoST fail.
 https://github.com/irocn/sector-checker/releases/tag/sector-sanity-checker-v0.3.0
 
 ## Usage
+
+```bash
+├── api
+├── cache
+│   └── s-t000100-156
+│       ├── p_aux
+│       ├── sc-02-data-tree-r-last-0.dat
+│       ├── sc-02-data-tree-r-last-1.dat
+│       ├── sc-02-data-tree-r-last-2.dat
+│       ├── sc-02-data-tree-r-last-3.dat
+│       ├── sc-02-data-tree-r-last-4.dat
+│       ├── sc-02-data-tree-r-last-5.dat
+│       ├── sc-02-data-tree-r-last-6.dat
+│       ├── sc-02-data-tree-r-last-7.dat
+│       └── t_aux
+├── config.toml
+├── sealed
+│   └── s-t000100-156
+├── token
+└── unsealed
+
+```
+
 ### step 1, export the environment variable
  - export FIL_PROOFS_PARENT_CACHE=<YOUR_PARENT_CACHE>
  - export FIL_PROOFS_PARAMETER_CACHE=<YOUR_FIL_PROOFS_PARAMETER_CACHE>
@@ -26,18 +49,7 @@ https://github.com/irocn/sector-checker/releases/tag/sector-sanity-checker-v0.3.
  
  - $>sector-sanity-checker checking  --sector-size=32G --sectors-file-only-number=sectors-to-scan.txt --miner-addr=t### --storage-dir=/opt/data/storage
  
- Then all the sectors specified by sectors-to-scan.txt  under folder /opt/data/storage will be scaned. 
-   The file sectors-to-scan.txt contains the sector numbers to be scaned, each number has one line.
-   The folder /opt/data/storage contains folder sealed and cache
- 
-  
-![image](https://github.com/irocn/sector-sanity-checker/blob/master/1599813675963.jpg)
-
-![image](https://github.com/irocn/sector-sanity-checker/blob/master/Screen%20Shot%202020-09-12%20at%2002.01.47.png)
-
-## 欢迎加入掉算力讨论俱乐部
-<img src="https://irocn.cn/static/media/uploads/filecoin/screen_shot_2020-10-24_at_7.21.26_pm.png" width="20%" />
 
 ## donate
 If the tool help you, please donate 1 FIL to us.
- - Wallet Address: f3xdfcq75orlojvx66qihwwxh3emi5m2flar2y2aaevo6e37lf4zxqwlxrmzecqp3zvjn4mux7b6eqnxrxhdia
+ - Wallet Address: f3rozq5jglh7m42v37gsij477kpwnpuamlr5p7daf7t54szc6nbv4kzi7wgw4ea2apxjlopi5nwdbvccvxnymq

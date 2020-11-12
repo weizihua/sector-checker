@@ -45,6 +45,12 @@ func main() {
 		EnableBashCompletion: true,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
+				Name:    "repo",
+				EnvVars: []string{"LOTUS_PATH"},
+				Hidden:  true,
+				Value:   "~/.lotus", // TODO: Consider XDG_DATA_HOME
+			},
+			&cli.StringFlag{
 				Name:    FlagMinerRepo,
 				Aliases: []string{FlagMinerRepoDeprecation},
 				EnvVars: []string{"LOTUS_MINER_PATH", "LOTUS_STORAGE_PATH"},

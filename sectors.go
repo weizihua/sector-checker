@@ -148,6 +148,7 @@ var sectorsListCmd = &cli.Command{
 		}
 		commitedIDs := make(map[abi.SectorNumber]struct{}, len(activeSet))
 		for _, info := range sset {
+			log.Debugf("info: : %+v", info)
 			commitedIDs[info.SectorNumber] = struct{}{}
 		}
 		log.Debugf("sset: : %+v", sset)

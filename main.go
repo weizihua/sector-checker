@@ -42,7 +42,7 @@ import (
 	"github.com/filecoin-project/lotus/chain/types"
 )
 
-var log = logging.Logger("lotus-bench")
+var log = logging.Logger("sector-checker")
 
 type Commit2In struct {
 	SectorNum  int64
@@ -53,7 +53,7 @@ type Commit2In struct {
 func main() {
 	logging.SetLogLevel("*", "DEBUG")
 
-	log.Info("Starting lotus-bench")
+	log.Info("Starting sector-checker")
 
 	miner.SupportedProofTypes[abi.RegisteredSealProof_StackedDrg2KiBV1] = struct{}{}
 
@@ -260,7 +260,9 @@ func getSectorsInfo(filePath string, proofType abi.RegisteredSealProof) []saproo
 
 		scanner.Scan()
 		cidStr := scanner.Text()
+		log.Debugf("===oscanner.Text()==: %+v", cidStr)
 		ccid, err := cid.Decode(cidStr)
+		log.Debugf("===cid.Decode()==: %+v", ccid)
 		if err != nil {
 			log.Infof("cid error, ignore sectors after this: %d, %s", uint64(index), err)
 			return sealedSectors

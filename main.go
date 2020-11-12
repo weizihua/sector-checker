@@ -248,11 +248,15 @@ func getSectorsInfo(filePath string, proofType abi.RegisteredSealProof) []saproo
 	if err != nil {
 		return sealedSectors
 	}
+	log.Debugf("===filePath==: %+v", filePath)
+	log.Debugf("===os.Open()==: %+v", file)
 	scanner := bufio.NewScanner(file)
+	log.Debugf("===bufio.NewScanner()==: %+v", scanner)
 	for scanner.Scan() {
 		sectorIndex := scanner.Text()
-
+		log.Debugf("===oscanner.Text()=254=: %+v", sectorIndex)
 		index, error := strconv.Atoi(sectorIndex)
+		log.Debugf("===strconv.Atoi()=256=: %+v", index)
 		if error != nil {
 			fmt.Println("error")
 			break

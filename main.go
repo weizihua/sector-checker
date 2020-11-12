@@ -39,7 +39,6 @@ import (
 
 	//	lapi "github.com/filecoin-project/lotus/api"
 	"github.com/filecoin-project/lotus/build"
-	"github.com/filecoin-project/lotus/chain/actors/policy"
 	"github.com/filecoin-project/lotus/chain/types"
 )
 
@@ -123,7 +122,7 @@ var sealBenchCmd = &cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
-		policy.AddSupportedProofTypes(abi.RegisteredSealProof_StackedDrg2KiBV1)
+		// policy.AddSupportedProofTypes(abi.RegisteredSealProof_StackedDrg2KiBV1)
 
 		if c.Bool("no-gpu") {
 			err := os.Setenv("BELLMAN_NO_GPU", "1")
@@ -141,26 +140,27 @@ var sealBenchCmd = &cli.Command{
 		}
 		log.Debugf("===storage-dir==: %+v", sdir)
 
-		// err = os.MkdirAll(sdir, 0775) //nolint:gosec
-		// if err != nil {
-		// 	return xerrors.Errorf("creating sectorbuilder dir: %w", err)
-		// }
+		err = os.MkdirAll(sdir, 0775) //nolint:gosec
+		if err != nil {
+			return xerrors.Errorf("creating sectorbuilder dir: %w", err)
+		}
 
 		// defer func() {
 		// }()
-		st, err := os.Stat(sdir)
-		if err != nil {
-			return xerrors.Errorf("stat backup file (%s): %w", sdir, err)
-		}
-		log.Debugf("===os.Stat==: %+v", st)
 
-		f, err := os.Open(sdir)
-		if err != nil {
-			return xerrors.Errorf("opening backup file: %w", err)
-		}
-		defer f.Close() // nolint:errcheck
-		log.Debugf("===os.Open==: %+v", f)
-		log.Info("Checking if repo exists")
+		// st, err := os.Stat(sdir)
+		// if err != nil {
+		// 	return xerrors.Errorf("File (%s) does not exist: %w", sdir, err)
+		// }
+		// log.Debugf("===os.Stat==: %+v", st)
+
+		// f, err := os.Open(sdir)
+		// if err != nil {
+		// 	return xerrors.Errorf("opening backup file: %w", err)
+		// }
+		// defer f.Close() // nolint:errcheck
+		// log.Debugf("===os.Open==: %+v", f)
+		// log.Info("Checking if repo exists")
 
 		sbdir = sdir
 

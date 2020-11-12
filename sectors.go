@@ -115,28 +115,28 @@ var sectorsListCmd = &cli.Command{
 		if err != nil {
 			return err
 		}
-		log.Infof("SectorsList: ", len(list))
+		log.Debugf("SectorsList: ", len(list))
 
 		maddr, err := nodeApi.ActorAddress(ctx)
 		if err != nil {
 			return err
 		}
-		log.Infof("ActorAddress: ", maddr)
+		log.Debugf("ActorAddress: ", maddr)
 
 		head, err := fullApi.ChainHead(ctx)
 		if err != nil {
 			return err
 		}
-		log.Infof("ChainHead: ", head)
+		log.Debugf("ChainHead: ", head)
 
 		activeSet, err := fullApi.StateMinerActiveSectors(ctx, maddr, head.Key())
 		if err != nil {
 			return err
 		}
-		log.Infof("activeSet: ", len(activeSet))
+		log.Debugf("activeSet: ", len(activeSet))
 
 		activeIDs := make(map[abi.SectorNumber]struct{}, len(activeSet))
-		log.Infof("activeIDs: ", activeIDs)
+		log.Debugf("activeIDs: ", activeIDs)
 
 		for _, info := range activeSet {
 			activeIDs[info.SectorNumber] = struct{}{}
@@ -150,9 +150,8 @@ var sectorsListCmd = &cli.Command{
 		for _, info := range sset {
 			commitedIDs[info.SectorNumber] = struct{}{}
 		}
-		log.Infof("activeSet: ", activeSet)
-		log.Infof("sset: ", len(sset))
-		log.Infof("commitedIDs: ", commitedIDs)
+		log.Debugf("sset: ", sset)
+		log.Debugf("commitedIDs: ", len(commitedIDs))
 
 		sort.Slice(list, func(i, j int) bool {
 			return list[i] < list[j]

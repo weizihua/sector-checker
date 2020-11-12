@@ -156,7 +156,7 @@ var sectorsListCmd = &cli.Command{
 		}
 		commitedIDs := make(map[abi.SectorNumber]struct{}, len(activeSet))
 		for _, info := range sset {
-			log.Debugf("info: : %+v", info)
+			// log.Debugf("info: : %+v", info)
 			commitedIDs[info.SectorNumber] = struct{}{}
 		}
 		// log.Debugf("sset: : %+v", sset)
@@ -177,74 +177,75 @@ var sectorsListCmd = &cli.Command{
 			tablewriter.NewLineCol("Error"),
 			tablewriter.NewLineCol("EarlyExpiration"))
 
-		// fast := cctx.Bool("fast")
+		fast := cctx.Bool("fast")
 
-		// for _, s := range list {
-		// 	st, err := nodeApi.SectorsStatus(ctx, s, !fast)
-		// 	if err != nil {
-		// 		tw.Write(map[string]interface{}{
-		// 			"ID":    s,
-		// 			"Error": err,
-		// 		})
-		// 		continue
-		// 	}
+		for _, s := range list {
+			st, err := nodeApi.SectorsStatus(ctx, s, !fast)
+			if err != nil {
+				tw.Write(map[string]interface{}{
+					"ID":    s,
+					"Error": err,
+				})
+				continue
+			}
+			log.Debugf("st: : %+v", st)
 
-		// 	if cctx.Bool("show-removed") || st.State != api.SectorState(sealing.Removed) {
-		// 		_, inSSet := commitedIDs[s]
-		// 		_, inASet := activeIDs[s]
+			// 	if cctx.Bool("show-removed") || st.State != api.SectorState(sealing.Removed) {
+			// 		_, inSSet := commitedIDs[s]
+			// 		_, inASet := activeIDs[s]
 
-		// 		dw := .0
-		// 		if st.Expiration-st.Activation > 0 {
-		// 			dw = float64(big.Div(st.DealWeight, big.NewInt(int64(st.Expiration-st.Activation))).Uint64())
-		// 		}
+			// 		dw := .0
+			// 		if st.Expiration-st.Activation > 0 {
+			// 			dw = float64(big.Div(st.DealWeight, big.NewInt(int64(st.Expiration-st.Activation))).Uint64())
+			// 		}
 
-		// 		var deals int
-		// 		for _, deal := range st.Deals {
-		// 			if deal != 0 {
-		// 				deals++
-		// 			}
-		// 		}
+			// 		var deals int
+			// 		for _, deal := range st.Deals {
+			// 			if deal != 0 {
+			// 				deals++
+			// 			}
+			// 		}
 
-		// 		exp := st.Expiration
-		// 		if st.OnTime > 0 && st.OnTime < exp {
-		// 			exp = st.OnTime // Can be different when the sector was CC upgraded
-		// 		}
+			// 		exp := st.Expiration
+			// 		if st.OnTime > 0 && st.OnTime < exp {
+			// 			exp = st.OnTime // Can be different when the sector was CC upgraded
+			// 		}
 
-		// 		m := map[string]interface{}{
-		// 			"ID":      s,
-		// 			"State":   color.New(stateOrder[sealing.SectorState(st.State)].col).Sprint(st.State),
-		// 			"OnChain": yesno(inSSet),
-		// 			"Active":  yesno(inASet),
-		// 		}
+			// 		m := map[string]interface{}{
+			// 			"ID":      s,
+			// 			"State":   color.New(stateOrder[sealing.SectorState(st.State)].col).Sprint(st.State),
+			// 			"OnChain": yesno(inSSet),
+			// 			"Active":  yesno(inASet),
+			// 		}
 
-		// 		if deals > 0 {
-		// 			m["Deals"] = color.GreenString("%d", deals)
-		// 		} else {
-		// 			m["Deals"] = color.BlueString("CC")
-		// 			if st.ToUpgrade {
-		// 				m["Deals"] = color.CyanString("CC(upgrade)")
-		// 			}
-		// 		}
+			// 		if deals > 0 {
+			// 			m["Deals"] = color.GreenString("%d", deals)
+			// 		} else {
+			// 			m["Deals"] = color.BlueString("CC")
+			// 			if st.ToUpgrade {
+			// 				m["Deals"] = color.CyanString("CC(upgrade)")
+			// 			}
+			// 		}
 
-		// 		if !fast {
-		// 			if !inSSet {
-		// 				m["Expiration"] = "n/a"
-		// 			} else {
-		// 				m["Expiration"] = lcli.EpochTime(head.Height(), exp)
+			// 		if !fast {
+			// 			if !inSSet {
+			// 				m["Expiration"] = "n/a"
+			// 			} else {
+			// 				m["Expiration"] = lcli.EpochTime(head.Height(), exp)
 
-		// 				if !fast && deals > 0 {
-		// 					m["DealWeight"] = units.BytesSize(dw)
-		// 				}
+			// 				if !fast && deals > 0 {
+			// 					m["DealWeight"] = units.BytesSize(dw)
+			// 				}
 
-		// 				if st.Early > 0 {
-		// 					m["EarlyExpiration"] = color.YellowString(lcli.EpochTime(head.Height(), st.Early))
-		// 				}
-		// 			}
-		// 		}
+			// 				if st.Early > 0 {
+			// 					m["EarlyExpiration"] = color.YellowString(lcli.EpochTime(head.Height(), st.Early))
+			// 				}
+			// 			}
+			// 		}
 
-		// 		tw.Write(m)
-		// 	}
-		// }
+			// 		tw.Write(m)
+			// 	}
+		}
 
 		return tw.Flush(os.Stdout)
 	},

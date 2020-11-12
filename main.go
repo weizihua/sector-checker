@@ -64,7 +64,7 @@ func main() {
 		Commands: []*cli.Command{
 			proveCmd,
 			sealBenchCmd,
-			// importBenchCmd,
+			importBenchCmd,
 		},
 	}
 
@@ -212,11 +212,14 @@ var sealBenchCmd = &cli.Command{
 		var challenge [32]byte
 		rand.Read(challenge[:])
 
+		windowpostStart := time.Now()
+
 		log.Info("computing window post snark (cold)")
 		wproof1, ps, err := sb.GenerateWindowPoSt(context.TODO(), mid, sealedSectors, challenge[:])
 		if err != nil {
 			return err
 		}
+		windowpost1 := time.Now()
 
 		wpvi1 := saproof.WindowPoStVerifyInfo{
 			Randomness:        challenge[:],
@@ -234,6 +237,39 @@ var sealBenchCmd = &cli.Command{
 		if !ok {
 			log.Error("post verification failed")
 		}
+		verifyWindowpost1 := time.Now()
+
+		type CheckResults struct {
+			SectorSize abi.SectorSize
+
+			// SealingResults []SealingResult
+
+			PostGenerateCandidates time.Duration
+			PostWinningProofCold   time.Duration
+			PostWinningProofHot    time.Duration
+			VerifyWinningPostCold  time.Duration
+			VerifyWinningPostHot   time.Duration
+
+			PostWindowProofCold  time.Duration
+			PostWindowProofHot   time.Duration
+			VerifyWindowPostCold time.Duration
+			VerifyWindowPostHot  time.Duration
+		}
+
+		bo := CheckResults{
+			SectorSize: sectorSize,
+			// SealingResults: sealTimings,
+		}
+
+		bo.PostGenerateCandidates = windowpost1.Sub(windowpostStart)
+		bo.VerifyWinningPostCold = verifyWindowpost1.Sub(windowpost1)
+
+		data, err := json.MarshalIndent(bo, "", "  ")
+		if err != nil {
+			return err
+		}
+
+		fmt.Println(string(data))
 
 		return nil
 	},

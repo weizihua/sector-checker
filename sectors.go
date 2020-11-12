@@ -4,14 +4,12 @@ import (
 	"os"
 	"sort"
 
-	"github.com/docker/go-units"
 	"github.com/fatih/color"
 	"github.com/filecoin-project/go-state-types/abi"
-	"github.com/filecoin-project/go-state-types/big"
-	"github.com/filecoin-project/lotus/api"
 	lcli "github.com/filecoin-project/lotus/cli"
 	sealing "github.com/filecoin-project/lotus/extern/storage-sealing"
 	"github.com/filecoin-project/lotus/lib/tablewriter"
+	logging "github.com/ipfs/go-log/v2"
 	"github.com/urfave/cli/v2"
 )
 
@@ -97,6 +95,7 @@ var sectorsListCmd = &cli.Command{
 	},
 	Action: func(cctx *cli.Context) error {
 		color.NoColor = !cctx.Bool("color")
+		logging.SetLogLevel("rpc", "INFO")
 
 		nodeApi, closer, err := lcli.GetStorageMinerAPI(cctx)
 		if err != nil {
@@ -116,22 +115,29 @@ var sectorsListCmd = &cli.Command{
 		if err != nil {
 			return err
 		}
+		log.Infof("SectorsList: ", len(list))
 
 		maddr, err := nodeApi.ActorAddress(ctx)
 		if err != nil {
 			return err
 		}
+		log.Infof("ActorAddress: ", maddr)
 
 		head, err := fullApi.ChainHead(ctx)
 		if err != nil {
 			return err
 		}
+		log.Infof("ChainHead: ", head)
 
 		activeSet, err := fullApi.StateMinerActiveSectors(ctx, maddr, head.Key())
 		if err != nil {
 			return err
 		}
+		log.Infof("activeSet: ", len(activeSet))
+
 		activeIDs := make(map[abi.SectorNumber]struct{}, len(activeSet))
+		log.Infof("activeIDs: ", activeIDs)
+
 		for _, info := range activeSet {
 			activeIDs[info.SectorNumber] = struct{}{}
 		}
@@ -144,6 +150,9 @@ var sectorsListCmd = &cli.Command{
 		for _, info := range sset {
 			commitedIDs[info.SectorNumber] = struct{}{}
 		}
+		log.Infof("activeSet: ", activeSet)
+		log.Infof("sset: ", len(sset))
+		log.Infof("commitedIDs: ", commitedIDs)
 
 		sort.Slice(list, func(i, j int) bool {
 			return list[i] < list[j]
@@ -160,74 +169,74 @@ var sectorsListCmd = &cli.Command{
 			tablewriter.NewLineCol("Error"),
 			tablewriter.NewLineCol("EarlyExpiration"))
 
-		fast := cctx.Bool("fast")
+		// fast := cctx.Bool("fast")
 
-		for _, s := range list {
-			st, err := nodeApi.SectorsStatus(ctx, s, !fast)
-			if err != nil {
-				tw.Write(map[string]interface{}{
-					"ID":    s,
-					"Error": err,
-				})
-				continue
-			}
+		// for _, s := range list {
+		// 	st, err := nodeApi.SectorsStatus(ctx, s, !fast)
+		// 	if err != nil {
+		// 		tw.Write(map[string]interface{}{
+		// 			"ID":    s,
+		// 			"Error": err,
+		// 		})
+		// 		continue
+		// 	}
 
-			if cctx.Bool("show-removed") || st.State != api.SectorState(sealing.Removed) {
-				_, inSSet := commitedIDs[s]
-				_, inASet := activeIDs[s]
+		// 	if cctx.Bool("show-removed") || st.State != api.SectorState(sealing.Removed) {
+		// 		_, inSSet := commitedIDs[s]
+		// 		_, inASet := activeIDs[s]
 
-				dw := .0
-				if st.Expiration-st.Activation > 0 {
-					dw = float64(big.Div(st.DealWeight, big.NewInt(int64(st.Expiration-st.Activation))).Uint64())
-				}
+		// 		dw := .0
+		// 		if st.Expiration-st.Activation > 0 {
+		// 			dw = float64(big.Div(st.DealWeight, big.NewInt(int64(st.Expiration-st.Activation))).Uint64())
+		// 		}
 
-				var deals int
-				for _, deal := range st.Deals {
-					if deal != 0 {
-						deals++
-					}
-				}
+		// 		var deals int
+		// 		for _, deal := range st.Deals {
+		// 			if deal != 0 {
+		// 				deals++
+		// 			}
+		// 		}
 
-				exp := st.Expiration
-				if st.OnTime > 0 && st.OnTime < exp {
-					exp = st.OnTime // Can be different when the sector was CC upgraded
-				}
+		// 		exp := st.Expiration
+		// 		if st.OnTime > 0 && st.OnTime < exp {
+		// 			exp = st.OnTime // Can be different when the sector was CC upgraded
+		// 		}
 
-				m := map[string]interface{}{
-					"ID":      s,
-					"State":   color.New(stateOrder[sealing.SectorState(st.State)].col).Sprint(st.State),
-					"OnChain": yesno(inSSet),
-					"Active":  yesno(inASet),
-				}
+		// 		m := map[string]interface{}{
+		// 			"ID":      s,
+		// 			"State":   color.New(stateOrder[sealing.SectorState(st.State)].col).Sprint(st.State),
+		// 			"OnChain": yesno(inSSet),
+		// 			"Active":  yesno(inASet),
+		// 		}
 
-				if deals > 0 {
-					m["Deals"] = color.GreenString("%d", deals)
-				} else {
-					m["Deals"] = color.BlueString("CC")
-					if st.ToUpgrade {
-						m["Deals"] = color.CyanString("CC(upgrade)")
-					}
-				}
+		// 		if deals > 0 {
+		// 			m["Deals"] = color.GreenString("%d", deals)
+		// 		} else {
+		// 			m["Deals"] = color.BlueString("CC")
+		// 			if st.ToUpgrade {
+		// 				m["Deals"] = color.CyanString("CC(upgrade)")
+		// 			}
+		// 		}
 
-				if !fast {
-					if !inSSet {
-						m["Expiration"] = "n/a"
-					} else {
-						m["Expiration"] = lcli.EpochTime(head.Height(), exp)
+		// 		if !fast {
+		// 			if !inSSet {
+		// 				m["Expiration"] = "n/a"
+		// 			} else {
+		// 				m["Expiration"] = lcli.EpochTime(head.Height(), exp)
 
-						if !fast && deals > 0 {
-							m["DealWeight"] = units.BytesSize(dw)
-						}
+		// 				if !fast && deals > 0 {
+		// 					m["DealWeight"] = units.BytesSize(dw)
+		// 				}
 
-						if st.Early > 0 {
-							m["EarlyExpiration"] = color.YellowString(lcli.EpochTime(head.Height(), st.Early))
-						}
-					}
-				}
+		// 				if st.Early > 0 {
+		// 					m["EarlyExpiration"] = color.YellowString(lcli.EpochTime(head.Height(), st.Early))
+		// 				}
+		// 			}
+		// 		}
 
-				tw.Write(m)
-			}
-		}
+		// 		tw.Write(m)
+		// 	}
+		// }
 
 		return tw.Flush(os.Stdout)
 	},

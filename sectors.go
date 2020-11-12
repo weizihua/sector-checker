@@ -135,6 +135,14 @@ var sectorsListCmd = &cli.Command{
 		}
 		log.Debugf("activeSet: ", len(activeSet))
 
+		// secCounts, err := fullApi.StateMinerSectorCount(ctx, maddr, types.EmptyTSK)
+		// if err != nil {
+		// 	return err
+		// }
+		// log.Debugf("activeSet: ", len(secCounts))
+		// proving := secCounts.Active + secCounts.Faulty
+		// nfaults := secCounts.Faulty
+
 		activeIDs := make(map[abi.SectorNumber]struct{}, len(activeSet))
 		log.Debugf("activeIDs: ", activeIDs)
 
@@ -151,7 +159,7 @@ var sectorsListCmd = &cli.Command{
 			log.Debugf("info: : %+v", info)
 			commitedIDs[info.SectorNumber] = struct{}{}
 		}
-		log.Debugf("sset: : %+v", sset)
+		// log.Debugf("sset: : %+v", sset)
 		log.Debugf("commitedIDs: ", len(commitedIDs))
 
 		sort.Slice(list, func(i, j int) bool {

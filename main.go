@@ -20,8 +20,7 @@ import (
 
 var log = logging.Logger("sector-checker")
 
-// const FlagMinerRepo = "miner-repo"
-const FlagMinerRepo = "storage-dir"
+const FlagMinerRepo = "miner-repo"
 
 // TODO remove after deprecation period
 const FlagMinerRepoDeprecation = "storagerepo"

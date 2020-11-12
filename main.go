@@ -50,6 +50,25 @@ type Commit2In struct {
 	SectorSize uint64
 }
 
+type CheckResults struct {
+	SectorSize abi.SectorSize
+
+	// SealingResults []SealingResult
+
+	PostGenerateCandidates  time.Duration
+	PostWinningProofCold    time.Duration
+	PostWinningProofHot     time.Duration
+	VerifyWinningPostCold   time.Duration
+	VerifyWinningPostHot    time.Duration
+	PostGenerateCandidatesM time.Duration
+	VerifyWinningPostColdM  time.Duration
+
+	PostWindowProofCold  time.Duration
+	PostWindowProofHot   time.Duration
+	VerifyWindowPostCold time.Duration
+	VerifyWindowPostHot  time.Duration
+}
+
 func main() {
 	logging.SetLogLevel("*", "DEBUG")
 
@@ -239,42 +258,26 @@ var sealBenchCmd = &cli.Command{
 		}
 		verifyWindowpost1 := time.Now()
 
-		type CheckResults struct {
-			SectorSize abi.SectorSize
+		// bo := CheckResults{
+		// 	SectorSize: sectorSize,
+		// 	// SealingResults: sealTimings,
+		// }
 
-			// SealingResults []SealingResult
+		PostGenerateCandidates := windowpost1.Sub(windowpostStart)
+		VerifyWinningPostCold := verifyWindowpost1.Sub(windowpost1)
 
-			PostGenerateCandidates  time.Duration
-			PostWinningProofCold    time.Duration
-			PostWinningProofHot     time.Duration
-			VerifyWinningPostCold   time.Duration
-			VerifyWinningPostHot    time.Duration
-			PostGenerateCandidatesM time.Duration
-			VerifyWinningPostColdM  time.Duration
+		// bo.PostGenerateCandidatesM = bo.PostGenerateCandidates.Truncate(time.Millisecond * 100)
+		// bo.VerifyWinningPostColdM = bo.VerifyWinningPostCold.Truncate(time.Millisecond * 100)
 
-			PostWindowProofCold  time.Duration
-			PostWindowProofHot   time.Duration
-			VerifyWindowPostCold time.Duration
-			VerifyWindowPostHot  time.Duration
-		}
+		fmt.Printf("PostGenerateCandidates == %+v:\n", PostGenerateCandidates)
+		fmt.Printf("VerifyWinningPostCold == %+v:\n", VerifyWinningPostCold)
 
-		bo := CheckResults{
-			SectorSize: sectorSize,
-			// SealingResults: sealTimings,
-		}
+		// data, err := json.MarshalIndent(bo, "", "  ")
+		// if err != nil {
+		// 	return err
+		// }
 
-		bo.PostGenerateCandidates = windowpost1.Sub(windowpostStart)
-		bo.VerifyWinningPostCold = verifyWindowpost1.Sub(windowpost1)
-
-		bo.PostGenerateCandidatesM = bo.PostGenerateCandidates.Truncate(time.Millisecond * 100)
-		bo.VerifyWinningPostColdM = bo.VerifyWinningPostCold.Truncate(time.Millisecond * 100)
-
-		data, err := json.MarshalIndent(bo, "", "  ")
-		if err != nil {
-			return err
-		}
-
-		fmt.Println(string(data))
+		// fmt.Println(string(data))
 
 		return nil
 	},

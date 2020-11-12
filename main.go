@@ -244,11 +244,13 @@ var sealBenchCmd = &cli.Command{
 
 			// SealingResults []SealingResult
 
-			PostGenerateCandidates time.Duration
-			PostWinningProofCold   time.Duration
-			PostWinningProofHot    time.Duration
-			VerifyWinningPostCold  time.Duration
-			VerifyWinningPostHot   time.Duration
+			PostGenerateCandidates  time.Duration
+			PostWinningProofCold    time.Duration
+			PostWinningProofHot     time.Duration
+			VerifyWinningPostCold   time.Duration
+			VerifyWinningPostHot    time.Duration
+			PostGenerateCandidatesM time.Duration
+			VerifyWinningPostColdM  time.Duration
 
 			PostWindowProofCold  time.Duration
 			PostWindowProofHot   time.Duration
@@ -263,6 +265,9 @@ var sealBenchCmd = &cli.Command{
 
 		bo.PostGenerateCandidates = windowpost1.Sub(windowpostStart)
 		bo.VerifyWinningPostCold = verifyWindowpost1.Sub(windowpost1)
+
+		bo.PostGenerateCandidatesM = bo.PostGenerateCandidates.Truncate(time.Millisecond * 100)
+		bo.VerifyWinningPostColdM = bo.VerifyWinningPostCold.Truncate(time.Millisecond * 100)
 
 		data, err := json.MarshalIndent(bo, "", "  ")
 		if err != nil {
